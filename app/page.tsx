@@ -3,10 +3,10 @@
 import { FormEvent, useState } from "react";
 
 type AgeGroup = "adult" | "child" | "";
-type Guest = { firstName: string; lastName: string; ageGroup: AgeGroup; starter: string; main: string; dessert: string; dietary: string };
+type Guest = { firstName: string; lastName: string; ageGroup: AgeGroup; starter: string; main: string; dessert: string; dietary: string; songSuggestion: string };
 
 const adultMenu = {
-  starters: ["Roasted vine tomato soup with red pepper salsa", "Homemade chicken liver parfait, sourdough croûtes, tomato and chorizo jam", "Salmon, sweet potato and coriander fish cake, sweet chilli and lime dressing"],
+  starters: ["Roasted vine tomato soup with red pepper salsa", "Homemade chicken liver parfait, sourdough croûtes, tomato and chorizo jam"],
   mains: ["Braised blade of beef, horseradish mash, Yorkshire pudding, caramelised red onion sauce", "Roasted chicken breast, fondant potato, seasonal vegetables, rosemary gravy", "Roasted vegetable and mozzarella tart, herb oil and rocket (vegetarian)"],
   desserts: ["Warm chocolate brownie, dark chocolate sauce, vanilla ice cream", "Baked New York cheesecake, blueberry compote, lemon shortbread base"],
 };
@@ -16,7 +16,7 @@ const childMenu = {
   desserts: ["Trio of ice cream", "Fresh fruit salad"],
 };
 
-const blankGuest = (): Guest => ({ firstName: "", lastName: "", ageGroup: "", starter: "", main: "", dessert: "", dietary: "" });
+const blankGuest = (): Guest => ({ firstName: "", lastName: "", ageGroup: "", starter: "", main: "", dessert: "", dietary: "", songSuggestion: "" });
 
 export default function Home() {
   const [attending, setAttending] = useState<"yes" | "no" | "">("");
@@ -44,6 +44,7 @@ export default function Home() {
           [`Guest ${guestNumber} — main`, guest.main],
           [`Guest ${guestNumber} — dessert`, guest.dessert],
           [`Guest ${guestNumber} — dietary requirements`, guest.dietary || "None provided"],
+          ...(guest.ageGroup === "adult" ? [[`Guest ${guestNumber} — song suggestion`, guest.songSuggestion || "None provided"]] : []),
         ];
       }));
       const response = await fetch("https://formsubmit.co/ajax/jon.rowding@gmail.com", {
@@ -95,7 +96,7 @@ export default function Home() {
                 <div className="guest-title"><h3>Guest {index + 1}</h3>{guests.length > 1 && <button type="button" className="text-button" onClick={() => setGuests((list) => list.filter((_, i) => i !== index))}>Remove</button>}</div>
                 <div className="contact-grid"><label>First name<input required value={guest.firstName} onChange={(e) => updateGuest(index, "firstName", e.target.value)} /></label><label>Surname<input required value={guest.lastName} onChange={(e) => updateGuest(index, "lastName", e.target.value)} /></label></div>
                 {guest.firstName.trim() && guest.lastName.trim() && <label className="reveal">Adult or child<select required value={guest.ageGroup} onChange={(e) => updateGuest(index, "ageGroup", e.target.value)}><option value="" disabled>Choose one</option><option value="adult">Adult</option><option value="child">Child (12 or under)</option></select></label>}
-                {guest.ageGroup && <div className="reveal"><div className="menu-grid"><MenuSelect label="Starter" choices={menu.starters} value={guest.starter} onChange={(value) => updateGuest(index, "starter", value)} /><MenuSelect label="Main" choices={menu.mains} value={guest.main} onChange={(value) => updateGuest(index, "main", value)} /><MenuSelect label="Dessert" choices={menu.desserts} value={guest.dessert} onChange={(value) => updateGuest(index, "dessert", value)} /></div><label>Dietary requirements or allergies<textarea value={guest.dietary} onChange={(e) => updateGuest(index, "dietary", e.target.value)} placeholder="Please tell us about any requirements" /></label></div>}
+                {guest.ageGroup && <div className="reveal"><div className="menu-grid"><MenuSelect label="Starter" choices={menu.starters} value={guest.starter} onChange={(value) => updateGuest(index, "starter", value)} /><MenuSelect label="Main" choices={menu.mains} value={guest.main} onChange={(value) => updateGuest(index, "main", value)} /><MenuSelect label="Dessert" choices={menu.desserts} value={guest.dessert} onChange={(value) => updateGuest(index, "dessert", value)} /></div><label>Dietary requirements or allergies<textarea value={guest.dietary} onChange={(e) => updateGuest(index, "dietary", e.target.value)} placeholder="Please tell us about any requirements" /></label>{guest.ageGroup === "adult" && <label className="song-suggestion">Song suggestion<textarea value={guest.songSuggestion} onChange={(e) => updateGuest(index, "songSuggestion", e.target.value)} placeholder="A song that will get you on the dance floor" /></label>}</div>}
               </article>;
             })}
             <button type="button" className="add-guest" onClick={() => setGuests((list) => [...list, blankGuest()])}>+ Add another guest</button>
