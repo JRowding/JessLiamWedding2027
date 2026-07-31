@@ -47,7 +47,7 @@ export default function Home() {
           ...(guest.ageGroup === "adult" ? [[`Guest ${guestNumber} — song suggestion`, guest.songSuggestion || "None provided"]] : []),
         ];
       }));
-      const response = await fetch("https://formsubmit.co/ajax/jon.rowding@gmail.com", {
+      const response = await fetch("/api/rsvp", {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify({
