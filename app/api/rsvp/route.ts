@@ -8,10 +8,7 @@ export async function POST(request: Request) {
   }
 
   const submission = await request.json();
-  const forwardedHost = request.headers.get("x-forwarded-host")?.split(",")[0];
-  const host = forwardedHost ?? request.headers.get("host");
-  const protocol = request.headers.get("x-forwarded-proto") ?? "https";
-  const origin = request.headers.get("origin") ?? (host ? `${protocol}://${host}` : new URL(request.url).origin);
+  const origin = "https://jlwedding2027.onrender.com";
   const response = await fetch(`https://formsubmit.co/ajax/${encodeURIComponent(recipient)}`, {
     method: "POST",
     headers: {
