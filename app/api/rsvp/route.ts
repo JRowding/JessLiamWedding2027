@@ -6,13 +6,20 @@ export async function POST(request: Request) {
   }
 
   const submission = await request.json();
+  const origin = request.headers.get("origin") ?? new URL(request.url).origin;
   const response = await fetch(`https://formsubmit.co/ajax/${encodeURIComponent(recipient)}`, {
     method: "POST",
-    headers: { "Content-Type": "application/json", Accept: "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Origin: origin,
+      Referer: `${origin}/`,
+    },
     body: JSON.stringify(submission),
   });
 
-  if (!response.ok) {
+  const result = await response.json() as { success?: boolean | string };
+  if (!response.ok || (result.success !== true && result.success !== "true")) {
     return Response.json({ error: "Could not send RSVP." }, { status: 502 });
   }
 
