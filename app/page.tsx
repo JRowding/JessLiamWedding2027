@@ -80,7 +80,6 @@ export default function Home() {
 
       <section className="details">
         <div><p className="eyebrow">The celebration</p><h2>A day to remember</h2><p><strong>Ceremony:</strong> St. George’s Church</p><p><strong>Wedding breakfast &amp; reception:</strong> Hadley Park Hotel</p><p>Please reply below so we can plan the day, including your menu choices.</p></div>
-        <div className="monogram" aria-hidden="true">J <span>+</span> L</div>
       </section>
 
       <section id="rsvp" className="rsvp">
