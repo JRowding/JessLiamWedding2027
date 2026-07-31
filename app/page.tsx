@@ -25,6 +25,7 @@ export default function Home() {
   const [contactLastName, setContactLastName] = useState("");
   const [message, setMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [honeypot, setHoneypot] = useState("");
 
   const updateGuest = (index: number, field: keyof Guest, value: string) => {
     setGuests((current) => current.map((guest, i) => i === index ? { ...guest, [field]: value } : guest));
@@ -47,18 +48,19 @@ export default function Home() {
           ...(guest.ageGroup === "adult" ? [[`Guest ${guestNumber} — song suggestion`, guest.songSuggestion || "None provided"]] : []),
         ];
       }));
-      const response = await fetch("/api/rsvp", {
+      await fetch("https://script.google.com/macros/s/AKfycbwcc2mYgUlYcfe3LoCXlJYueTIP_oKZWleBnSELyAuci5l9dIIQ_w6JFPYyw5e4nE8_gQ/exec", {
         method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
         body: JSON.stringify({
           _subject: "New RSVP — Jess & Liam",
           _template: "table",
           "Lead guest": `${contactFirstName} ${contactLastName}`,
           Attendance: attending === "yes" ? "Joyfully accepts" : "Regretfully declines",
+          _honey: honeypot,
           ...(attending === "yes" ? guestFields : { "Party details": "No menu choices required" }),
         }),
       });
-      if (!response.ok) throw new Error("Could not send RSVP");
       localStorage.setItem("jess-and-liam-rsvp", JSON.stringify(rsvp));
       setMessage(attending === "yes" ? "Thank you — your RSVP and menu choices have been sent to Jess and Liam." : "Thank you for letting Jess and Liam know.");
     } catch {
@@ -85,6 +87,7 @@ export default function Home() {
       <section id="rsvp" className="rsvp">
         <p className="eyebrow">Kindly reply</p><h2>Will you join us?</h2>
         <form onSubmit={submit}>
+          <label className="honeypot" aria-hidden="true">Leave this blank<input tabIndex={-1} autoComplete="off" value={honeypot} onChange={(e) => setHoneypot(e.target.value)} /></label>
           <div className="contact-grid"><label>Your first name<input required value={contactFirstName} onChange={(e) => setContactFirstName(e.target.value)} /></label><label>Your surname<input required value={contactLastName} onChange={(e) => setContactLastName(e.target.value)} /></label></div>
           <fieldset className="attendance"><legend>Attendance</legend><label><input type="radio" name="attendance" required checked={attending === "yes"} onChange={() => { setAttending("yes"); setGuests((current) => current.map((guest, index) => index === 0 ? { ...guest, firstName: contactFirstName, lastName: contactLastName } : guest)); }} /> Joyfully accepts</label><label><input type="radio" name="attendance" checked={attending === "no"} onChange={() => setAttending("no")} /> Regretfully declines</label></fieldset>
           {attending === "yes" && <div className="guests">
