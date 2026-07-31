@@ -1,3 +1,5 @@
+import process from "node:process";
+
 export async function POST(request: Request) {
   const recipient = process.env.RSVP_RECIPIENT;
 
